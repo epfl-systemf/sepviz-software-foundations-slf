@@ -273,7 +273,13 @@ Definition quadruple : val :=
     [4*n]. Hint: follow the pattern of the previous proof. *)
 
 (* FILL IN HERE *)
-
+Lemma triple_quadruple: forall (n: int),
+  triple (quadruple n)
+  \[]
+  (fun r => \[r = 4 * n]).
+Proof.
+  xwp. repeat xapp. xsimpl. math.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, especially useful (triple_inplace_double) *)
@@ -292,7 +298,13 @@ Definition inplace_double : val :=
     pattern of the first example, namely [triple_incr]. *)
 
 (* FILL IN HERE *)
-
+Lemma triple_inplace_double: forall (p: loc) (n: int),
+  triple (inplace_double p)
+  (p ~~> n)
+  (fun _ => p ~~> (2 * n)).
+Proof.
+  xwp. repeat xapp. xsimpl. math.
+Qed.
 (** [] *)
 
 (** From here on, we use the command [Proof using] for introducing a proof
@@ -510,7 +522,13 @@ Definition transfer : val :=
     references. *)
 
 (* FILL IN HERE *)
-
+Lemma triple_transfer: forall (p q: loc) (n m: int),
+  triple (transfer p q)
+  (p ~~> n \* q ~~> m)
+  (fun _ => p ~~> (n + m) \* q ~~> 0).
+Proof.
+  xwp. repeat xapp. xsimpl.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, standard, especially useful (triple_transfer_aliased)
@@ -520,7 +538,13 @@ Definition transfer : val :=
     should take the form [triple (transfer p p) _ _]. *)
 
 (* FILL IN HERE *)
-
+Lemma triple_transfer_aliased: forall (p: loc) (n: int),
+  triple (transfer p p)
+  (p ~~> n)
+  (fun _ => p ~~> 0).
+Proof.
+  xwp. repeat xapp. xsimpl.
+Qed.
 (** [] *)
 
 (* ================================================================= *)
@@ -621,7 +645,13 @@ Qed.
     following the proof pattern employed in [triple_incr_first_derived]. *)
 
 (* FILL IN HERE *)
-
+Lemma triple_ref_greater_abstract: forall (p: loc) (n: int),
+  triple (ref_greater p)
+    (p ~~> n)
+    (funloc q => \exists (m: int), \[m > n] \* p ~~> n \* q ~~> m).
+Proof.
+  xwp. repeat xapp. intros q. xsimpl; [reflexivity | math].
+Qed.
 (** [] *)
 
 (* ================================================================= *)
@@ -744,8 +774,9 @@ Lemma triple_get_and_free : forall p v,
   triple (get_and_free p)
     (p ~~> v)
     (fun r => \[r = v]).
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using. (* FILL IN HERE *)
+  xwp. repeat xapp. xval. xsimpl. auto.
+Qed.
 (** [] *)
 
 #[global] Hint Resolve triple_get_and_free : triple.
@@ -954,8 +985,13 @@ Lemma triple_repeat_incr : forall (m n:int) (p:loc),
     [intros m. induction_wf IH: ...], but make sure to not leave [n] in the
     goal, otherwise the induction principle that you obtain is too weak. *)
 
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using. (* FILL IN HERE *)
+  intros m. induction_wf IH: (downto 0) m.
+  unfold downto in IH.
+  xwp. xapp. xif.
+  { intros Hm. repeat xapp; try math. xsimpl; math. }
+  { intros Hm. xval. xsimpl. math. }
+Qed.
 (** [] *)
 
 (** In the previous examples of recursive functions, the induction was always
@@ -1049,8 +1085,16 @@ Lemma triple_repeat_incr' : forall (p:loc) (n m:int),
   triple (repeat_incr p m)
     (p ~~> n)
     (fun _ => p ~~> (n + max 0 m)).
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using. (* FILL IN HERE *)
+  intros. gen n. induction_wf IH: (downto 0) m.
+  xwp. repeat xapp. xif; intro Hm; repeat xapp; try math.
+  { xsimpl. destruct (m - 1) eqn: Heq.
+    * (* m - 1 = 0 *) repeat rewrite max_r; math.
+    * (* m - 1 > 0 *) repeat rewrite max_r; math.
+    * (* m - 1 < 0 *) rewrite max_l; math.
+  }
+  { xval. xsimpl. rewrite max_l; math. }
+Qed.
 (** [] *)
 
 (* ================================================================= *)
@@ -1096,8 +1140,12 @@ Lemma triple_step_transfer : forall p q n m,
     Hint: to set up the induction, follow the pattern shown in
     the proof of [triple_repeat_incr']. *)
 
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using. (* FILL IN HERE *)
+  intros p q n m. gen n. induction_wf IH: (downto 0) m.
+  xwp. repeat xapp. xif; intros Hm.
+  { repeat xapp; try xsimpl; math. }
+  { xval. xsimpl; math. }
+Qed.
 (** [] *)
 
 (* ################################################################# *)
