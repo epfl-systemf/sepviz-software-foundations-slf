@@ -362,8 +362,14 @@ Lemma hoare_conseq : forall t H Q H' Q',
   H ==> H' ->
   Q' ===> Q ->
   hoare t H Q.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  (* FILL IN HERE *)
+  unfold hoare. intros.
+  specialize (H1 s H3); clear H3. specialize (H0 s H1); clear H1.
+  destruct H0 as (s' & v & Heval & Hpost).
+  specialize (H2 v s' Hpost); clear Hpost.
+  exists s' v. split; assumption.
+Qed.
 (** [] *)
 
 (** The frame rule asserts that if one can derive a specification of
@@ -457,6 +463,8 @@ Proof using.
   lets N: triple_frame (q ~~> m) M. apply N.
   (* A shorter, backward-reasoning proof:
      [intros. apply triple_frame. apply triple_incr.] *)
+  Restart.
+  intros. apply triple_frame. apply triple_incr.
 Qed.
 
 (** Here, we have framed on [q ~~> m], but we could similarly
@@ -601,8 +609,17 @@ Proof using. introv M. hnf in M. eauto. Qed.
 
 Lemma hstar_hpure_l : forall P H h,
   (\[P] \* H) h = (P /\ H h).
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. apply propositional_extensionality. iff H1.
+  - apply hstar_inv in H1. destruct H1 as (h1 & h2 & H1 & H2 & H3 & H4).
+    apply hpure_inv in H1. destruct H1 as (H1 & ->).
+    rewrite Fmap.union_empty_l in H4; subst.
+    auto.
+  - destruct H1 as (H1 & H2). apply hstar_inv.
+    exists (@Fmap.empty loc val). exists h.
+    repeat split; auto.
+    rewrite Fmap.union_empty_l; reflexivity.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -640,10 +657,47 @@ Definition triple_lowlevel (t:trm) (H:hprop) (Q:val->hprop) : Prop :=
 
     Prove the equivalence between [triple] and [triple_low_level]. *)
 
+Lemma hstar_comm: forall H1 H2, H1 \* H2 = H2 \* H1.
+Proof.
+  intros. apply hprop_eq. intros h. iff H.
+  all: apply hstar_inv in H; apply hstar_inv;
+       destruct H as (h1 & h2 & ? & ? & ? & ->);
+       exists h2 h1; repeat split; auto;
+       apply Fmap.union_comm_of_disjoint; auto.
+Qed.
+
+Lemma hstar_hpure_r : forall P H h,
+  (H \* \[P]) h = (H h /\ P).
+Proof using.
+  intros. rewrite hstar_comm. rewrite hstar_hpure_l.
+  apply propositional_extensionality. tauto.
+Qed.
+
 Lemma triple_iff_triple_lowlevel : forall t H Q,
   triple t H Q <-> triple_lowlevel t H Q.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  (* Proof scretch: [H] holds on [h1], [H'] holds on [h2]
+     (dummy [H': fun h => h = h2]), [Q] holds on [h1'].
+     [s = h1 \u h2], [s' = h1' \u h2]. *)
+  intros. unfold triple, hoare, triple_lowlevel. iff Ht.
+  - intros. specialize (Ht (fun h => h = h2) (h1 \u h2)).
+    (* Massage Ht. *)
+    assert ((H \* (=h2)) (h1 \u h2)).
+    { unfold hstar. exists h1 h2. repeat split; auto. }
+    specialize (Ht H2); clear H2. destruct Ht as (s' & v & Heval & Hs').
+    (* Massage Hs'. *)
+    unfold hstar in Hs'. destruct Hs' as (h1' & ? & Hq & ? & Hmap & Hs'); subst.
+    (* Instantiate. *)
+    exists h1', v. repeat split; auto.
+  - intros.
+    (* Massage H0. *)
+    unfold hstar in H0.
+    destruct H0 as (h1 & h2 & Hh1 & Hh2 & Hmap & Hs). subst.
+    (* Massage Ht. *)
+    specialize (Ht h1 h2 Hmap Hh1). destruct Ht as (h1' & v & Hmap' & Heval & Hq).
+    (* Instantiate. *)
+    exists (h1' \u h2), v. split; [auto|]. unfold hstar. exists h1' h2. repeat split; auto.
+Qed.
 (** [] *)
 
 (* ================================================================= *)
@@ -779,8 +833,11 @@ Axiom functional_extensionality : forall A B (f g:A->B),
 Lemma predicate_extensionality_derived : forall A (P Q:A->Prop),
   (forall x, P x <-> Q x) ->
   P = Q.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros.
+  apply functional_extensionality. intros x.
+  apply propositional_extensionality. apply H.
+Qed.
 (** [] *)
 
 End Extensionality.
