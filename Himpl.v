@@ -90,8 +90,10 @@ Lemma himpl_antisym : forall H1 H2,
   (H1 ==> H2) ->
   (H2 ==> H1) ->
   H1 = H2.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  introv M1 M2. unfold himpl in *.
+  apply hprop_eq. intros h. specialize (M1 h). specialize (M2 h). tauto.
+Qed.
 (** [] *)
 
 (** Remark: as the proof scripts show, the fact that entailment on [hprop]
@@ -196,8 +198,13 @@ Parameter himpl_frame_l : forall H2 H1 H1',
 
 Lemma hstar_comm_assoc : forall H1 H2 H3,
   H1 \* H2 \* H3 = H2 \* H1 \* H3.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. apply himpl_antisym.
+  - rewrite (hstar_comm H2 H3). rewrite <- hstar_assoc. rewrite hstar_comm.
+    apply himpl_refl.
+  - rewrite (hstar_comm H1 H3). rewrite <- hstar_assoc. rewrite hstar_comm.
+    apply himpl_refl.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, standard, especially useful (himpl_frame_r)
@@ -207,8 +214,10 @@ Proof using. (* FILL IN HERE *) Admitted.
 Lemma himpl_frame_r : forall H1 H2 H2',
   H2 ==> H2' ->
   (H1 \* H2) ==> (H1 \* H2').
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. rewrite (hstar_comm H1 H2). rewrite (hstar_comm H1 H2').
+  apply himpl_frame_l. assumption.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, standard, especially useful (himpl_frame_lr)
@@ -222,8 +231,12 @@ Lemma himpl_frame_lr : forall H1 H1' H2 H2',
   H1 ==> H1' ->
   H2 ==> H2' ->
   (H1 \* H2) ==> (H1' \* H2').
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros.
+  eapply himpl_trans.
+  - apply himpl_frame_l. eassumption.
+  - apply himpl_frame_r. assumption.
+Qed.
 (** [] *)
 
 (* ================================================================= *)
@@ -246,8 +259,9 @@ Lemma himpl_hstar_hpure_r : forall P H H',
   P ->
   (H ==> H') ->
   H ==> (\[P] \* H').
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. intros h. rewrite hstar_hpure_l. specialize (H1 h). tauto.
+Qed.
 (** [] *)
 
 (** Reciprocally, consider an entailment of the form [(\[P] \* H) ==> H'].
@@ -265,8 +279,10 @@ Proof using. (* FILL IN HERE *) Admitted.
 Lemma himpl_hstar_hpure_l : forall (P:Prop) (H H':hprop),
   (P -> H ==> H') ->
   (\[P] \* H) ==> H'.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. intros h. rewrite hstar_hpure_l. intros (Hp & Hh).
+  specialize (H0 Hp h). tauto.
+Qed.
 (** [] *)
 
 (** Consider an entailment of the form [H ==> (\exists x, J x)], where [x]
@@ -280,8 +296,10 @@ Proof using. (* FILL IN HERE *) Admitted.
 Lemma himpl_hexists_r : forall A (x:A) H J,
   (H ==> J x) ->
   H ==> (\exists x, J x).
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. unfold himpl in *. intros h Hh. specialize (H0 h Hh).
+  exists x. assumption.
+Qed.
 (** [] *)
 
 (** Reciprocally, consider an entailment [(\exists x, (J x)) ==> H].
@@ -307,8 +325,9 @@ Proof using. (* FILL IN HERE *) Admitted.
 Lemma himpl_hexists_l : forall (A:Type) (H:hprop) (J:A->hprop),
   (forall x, J x ==> H) ->
   (\exists x, J x) ==> H.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. unfold himpl in *. intros h (x & Hx). apply (H0 x h); auto.
+Qed.
 (** [] *)
 
 (* ================================================================= *)
@@ -394,8 +413,10 @@ Lemma triple_conseq_frame : forall H2 H1 Q1 t H Q,
 
     Prove the combined consequence-frame rule. *)
 
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. eapply triple_conseq; [ | exact H3 | exact H4 ].
+  apply triple_frame. exact H0.
+Qed.
 (** [] *)
 
 (* ================================================================= *)
@@ -438,7 +459,6 @@ Implicit Types n m : int.
 
 (** Quiz: For each entailment relation, indicate (without a Coq proof)
     whether it is true or false. Solutions appear further on. *)
-
 Parameter case_study_1 : forall p q,
       p ~~> 3 \* q ~~> 4
   ==> q ~~> 4 \* p ~~> 3.
@@ -479,6 +499,8 @@ Parameter case_study_10 : forall p,
       exists n, p ~~> n
   ==> p ~~> 3.
 
+(* 1~10: TFFFT FTTTF *)
+
 Parameter case_study_11 : forall p,
       \exists n, p ~~> n \* \[n > 0]
   ==> \exists n, \[n > 1] \* p ~~> (n-1).
@@ -489,6 +511,8 @@ Parameter case_study_12 : forall p q,
 
 Parameter case_study_13 : forall p n,
   p ~~> n \* \[n > 0] \* \[n < 0] ==> p ~~> n \* p ~~> n.
+
+(* 11~13: TTT *)
 
 End CaseStudy.
 
@@ -597,8 +621,12 @@ Implicit Types n : int.
 Lemma himpl_example_1 : forall p1 p2 p3 p4,
       p1 ~~> 6 \* p2 ~~> 7 \* p3 ~~> 8 \* p4 ~~> 9
   ==> p4 ~~> 9 \* p3 ~~> 8 \* p2 ~~> 7 \* p1 ~~> 6.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. rewrite (hstar_comm (p3 ~~> 8) (p4 ~~> 9)).
+  rewrite <- hstar_assoc. rewrite hstar_comm.
+  rewrite <- (hstar_assoc _ _ (p2 ~~> 7 \* p1 ~~> 6)). apply himpl_frame_r.
+  rewrite hstar_comm. apply himpl_refl.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, standard, optional (himpl_example_2)
@@ -611,8 +639,12 @@ Proof using. (* FILL IN HERE *) Admitted.
 Lemma himpl_example_2 : forall p1 p2 p3 n,
       p1 ~~> 6 \* \[n > 0] \* p2 ~~> 7 \* \[n < 0]
   ==> p3 ~~> 8.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. rewrite (hstar_comm \[n > 0]). rewrite hstar_assoc. rewrite hstar_comm.
+  rewrite (hstar_comm (p2 ~~> 7)). do 2 rewrite hstar_assoc.
+  do 2 (apply himpl_hstar_hpure_l; intros).
+  math.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, standard, optional (himpl_example_3)
@@ -907,8 +939,11 @@ Lemma xchange_lemma : forall H1 H1' H H' H2,
   H ==> H1 \* H2 ->
   H1' \* H2 ==> H' ->
   H ==> H'.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  introv M1 M2 M3. eapply himpl_trans; [ exact M2 | ].
+  eapply himpl_trans; [ | exact M3 ].
+  apply himpl_frame_l. exact M1.
+Qed.
 (** [] *)
 
 End XsimplTactic.
@@ -938,8 +973,11 @@ Module FundamentalProofs.
 Lemma himpl_frame_l : forall H2 H1 H1',
   H1 ==> H1' ->
   (H1 \* H2) ==> (H1' \* H2).
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  introv M1. unfold himpl, hstar. intros h.
+  intros (h1 & h2 & Hh1 & Hh2 & Hmap & ->).
+  exists h1 h2. specialize (M1 h1 Hh1). auto.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, standard, especially useful (himpl_frame_r)
@@ -949,8 +987,11 @@ Proof using. (* FILL IN HERE *) Admitted.
 Lemma himpl_frame_r : forall H1 H2 H2',
   H2 ==> H2' ->
   (H1 \* H2) ==> (H1 \* H2').
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  introv M2. unfold himpl, hstar. intros h.
+  intros (h1 & h2 & Hh1 & Hh2 & Hmap & ->).
+  exists h1 h2. specialize (M2 h2 Hh2). auto.
+Qed.
 (** [] *)
 
 (** The second simplest result is the extrusion property for existentials.
@@ -972,6 +1013,7 @@ Proof using. (* FILL IN HERE *) Admitted.
 Lemma hstar_hexists : forall A (J:A->hprop) H,
   (\exists x, J x) \* H = \exists x, (J x \* H).
 Proof using.
+  (* Set Printing Parentheses. *)
   intros. applys himpl_antisym.
   { intros h (h1&h2&M1&M2&D&U). destruct M1 as (x&M1). exists* x h1 h2. }
   { intros h (x&M). destruct M as (h1&h2&M1&M2&D&U). exists h1 h2.
@@ -1026,8 +1068,13 @@ Qed.
 
 Lemma hstar_hempty_l : forall H,
   \[] \* H = H.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. apply hprop_eq. intros h. split; unfold hstar.
+  - intros (h1 & h2 & Hh1 & Hh2 & Hmap & ->).
+    unfold hempty in Hh1; subst. rewrite Fmap.union_empty_l. auto.
+  - intros. exists (@Fmap.empty loc val), h. splits; auto using hempty_intro.
+    rewrite Fmap.union_empty_l; reflexivity.
+Qed.
 (** [] *)
 
 (** The lemma showing that [hempty] is a right neutral can be derived
