@@ -457,8 +457,10 @@ Parameter triple_hexists : forall t (A:Type) (J:A->hprop) Q,
 Lemma triple_hpure' : forall t (P:Prop) Q,
   (P -> triple t \[] Q) ->
   triple t \[P] Q.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  unfold triple. intros. apply hoare_hpure. intros HP.
+  specialize (H HP H'). rewrite hstar_hempty_l in H. assumption.
+Qed.
 (** [] *)
 
 (* ================================================================= *)
@@ -588,8 +590,12 @@ Parameter triple_val : forall v H Q,
 
 Lemma triple_val_minimal : forall v,
   triple (trm_val v) \[] (fun r => \[r = v]).
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  unfold triple. intros. rewrite hstar_hempty_l.
+  unfold hoare. intros. exists h v. split.
+  - apply eval_val.
+  - rewrite hstar_hpure_l. auto.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, especially useful (triple_val')
@@ -601,8 +607,15 @@ Proof using. (* FILL IN HERE *) Admitted.
 Lemma triple_val' : forall v H Q,
   H ==> Q v ->
   triple (trm_val v) H Q.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros.
+  pose proof (triple_val_minimal v) as M.
+  eapply triple_conseq_frame; eauto.
+  - rewrite hstar_hempty_l. apply himpl_refl.
+  - unfold qimpl; intros v' h. rewrite hstar_hpure_l.
+    intros (-> & Hh).
+    specialize (H0 h Hh). assumption.
+Qed.
 (** [] *)
 
 (** **** Exercise: 4 stars, standard, especially useful (triple_let_val)
@@ -619,7 +632,15 @@ Proof using. (* FILL IN HERE *) Admitted.
     with the let-binding rule, and exploit the appropriate structural rules. *)
 
 (* FILL IN HERE *)
-
+Lemma triple_let_val: forall x v1 t2 H Q,
+  triple (subst x v1 t2) H Q ->
+  triple (trm_let x v1 t2) H Q.
+Proof.
+  intros. eapply triple_let.
+  - eapply triple_val. instantiate (1 := (fun r => \[r = v1] \* H)).
+    xsimpl. reflexivity.
+  - intros v. simpl. apply triple_hpure. intros ->. assumption.
+Qed.
 (** [] *)
 
 (* ----------------------------------------------------------------- *)
@@ -915,8 +936,16 @@ Lemma triple_succ_using_incr : forall (n:int),
     Hint: use [applys triple_val] for reasoning about the final
     return value, namely [x]. *)
 
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. applys triple_app_fun. { reflexivity. } simpl.
+  applys triple_let. { apply triple_ref. }
+  intros r. simpl. apply triple_hexists. intros p. apply triple_hpure. intros ->.
+  applys triple_seq. { apply triple_incr. }
+  applys triple_let. { apply triple_get. }
+  intros n'. simpl. applys triple_hpure. intros ->.
+  applys triple_seq. { apply triple_free. }
+  applys triple_val. xsimpl. reflexivity.
+Qed.
 (** [] *)
 
 (* ----------------------------------------------------------------- *)
@@ -958,8 +987,24 @@ Lemma triple_factorec : forall n,
   triple (factorec n)
     \[]
     (fun r => \[r = facto n]).
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros n. induction_wf IH: (downto 0) n.
+  intros.  applys triple_app_fix. { reflexivity. } simpl.
+  applys triple_let. { applys triple_le. }
+  intros b. simpl. applys triple_hpure'. intros ->.
+  applys triple_if. case_if as C.
+  - applys triple_val. xsimpl.
+    rewrite facto_init; auto.
+  - applys triple_let. { applys triple_sub. }
+    intros x. simpl.
+    applys triple_let.
+    { applys triple_hpure'. intros ->.
+      applys IH; math. }
+    intros y. simpl. applys triple_hpure'. intros ->.
+    assert (facto n = n * facto (n - 1)) as Hstep.
+    { apply facto_step. math. }
+    rewrite Hstep. applys triple_mul.
+Qed.
 (** [] *)
 
 End ExamplePrograms.
@@ -1022,8 +1067,12 @@ Lemma triple_div_from_triple_div' : forall n1 n2,
   triple (val_div n1 n2)
     \[]
     (fun r => \[r = val_int (Z.quot n1 n2)]).
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. applys triple_conseq.
+  - apply triple_div. assumption.
+  - xsimpl.
+  - xsimpl. tauto.
+Qed.
 (** [] *)
 
 (** As we said, placing pure preconditions outside of the triples
