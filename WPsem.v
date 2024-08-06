@@ -290,8 +290,12 @@ Lemma triple_seq_from_wp_seq : forall t1 t2 H Q H1,
   triple t1 H (fun v => H1) ->
   triple t2 H1 Q ->
   triple (trm_seq t1 t2) H Q.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  introv M1 M2. rewrite <- wp_equiv in *.
+  eapply himpl_trans; [ | eapply wp_seq ].
+  eapply himpl_trans; [ exact M1 | ].
+  apply wp_conseq. unfold qimpl; intros v. exact M2.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -450,10 +454,14 @@ Definition wp (t:trm) (Q:val->hprop) : hprop :=
 
 Lemma wp_equiv : forall t H Q,
   (H ==> wp t Q) <-> (triple t H Q).
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. unfold wp. iff M; cycle 1.
+  - xsimpl. assumption.
+  - eapply triple_conseq; [ | exact M | apply qimpl_refl ]; clear M.
+    apply triple_hexists. intros H1.
+    rewrite hstar_comm. apply triple_hpure. auto.
+Qed.
 (** [] *)
-
 End WpHighLevel.
 
 (* ================================================================= *)
@@ -528,8 +536,16 @@ Definition wp (t:trm) (Q:val->hprop) : hprop :=
 
 Lemma wp_equiv_wp_low : forall t H Q,
   (H ==> wp t Q) <-> (triple t H Q).
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. unfold wp. iff M.
+  - eapply triple_conseq; [| exact M | apply qimpl_refl ]; clear M.
+    apply triple_named_heap. auto.
+  - intros h Mh.
+    eapply triple_conseq with (H' := (=h) \* \[H h]);
+      [| xsimpl; auto | apply qimpl_refl].
+    { rewrite hexists_named_eq in M at 1.
+      eapply triple_conseq; [exact M | xsimpl; auto | apply qimpl_refl]. }
+Qed.
 (** [] *)
 
 End WpLowLevel.
@@ -554,8 +570,9 @@ Lemma triple_hexists_in_wp : forall t Q A (J:A->hprop),
   (forall x, (J x ==> wp t Q)) ->
   (\exists x, J x) ==> wp t Q.
 
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. apply himpl_hexists_l. assumption.
+Qed.
 (** [] *)
 
 (** In other words, in the [wp] presentation, we do not need
@@ -586,8 +603,12 @@ Lemma wp_conseq_frame_trans : forall t H H1 H2 Q1 Q,
   H ==> H1 \* H2 ->
   Q1 \*+ H2 ===> Q ->
   H ==> wp t Q.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros.
+  eapply wp_conseq_trans; [| eassumption | eassumption ].
+  eapply himpl_trans; [| apply wp_frame].
+  xsimpl. auto.
+Qed.
 (** [] *)
 
 (** The combined structural rule for [wp] can actually be stated in a more
@@ -605,8 +626,10 @@ Proof using. (* FILL IN HERE *) Admitted.
 Lemma wp_conseq_frame : forall t H Q1 Q2,
   Q1 \*+ H ===> Q2 ->
   (wp t Q1) \* H ==> (wp t Q2).
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  introv M. eapply wp_conseq_frame_trans;
+    [ apply himpl_refl | apply himpl_refl | exact M ].
+Qed.
 (** [] *)
 
 (* ================================================================= *)
@@ -630,8 +653,10 @@ Parameter wp_if : forall b t1 t2 Q,
 
 Lemma wp_if' : forall b t1 t2 Q,
   (if b then (wp t1 Q) else (wp t2 Q)) ==> wp (trm_if b t1 t2) Q.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. eapply himpl_trans; [ | apply wp_if ].
+  destruct b; xsimpl.
+Qed.
 (** [] *)
 
 End WpIfAlt.
@@ -772,10 +797,23 @@ Qed.
 
     Prove wp-style rule for let bindings. *)
 
+Lemma hoare_triple_frame: forall t H' Q,
+  hoare t ((\exists H, H \* \[triple t H Q]) \* H') (Q \*+ H').
+Proof.
+  intros.
+  rewrite hstar_hexists. apply hoare_hexists.
+  intros H. rewrite hstar_comm, <- hstar_assoc, hstar_comm.
+  apply hoare_hpure.
+  unfold triple. intros M. specialize (M H'). rewrite hstar_comm. exact M.
+Qed.
+
 Lemma wp_let : forall x t1 t2 Q,
   wp t1 (fun v => wp (subst x v t2) Q) ==> wp (trm_let x t1 t2) Q.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. unfold wp. xsimpl. intros H M H'.
+  eapply hoare_let; [ exact (M H') | ].
+  intros v. simpl. eapply hoare_triple_frame.
+Qed.
 (** [] *)
 
 (** Note: [wp_seq] admits essentially the same proof as [wp_let], simply
