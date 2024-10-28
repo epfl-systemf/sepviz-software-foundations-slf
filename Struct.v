@@ -72,6 +72,16 @@ Fixpoint hcells (L:list val) (p:loc) : hprop :=
 Parameter hcells_concat_eq : forall p L1 L2,
   hcells (L1++L2) p = (hcells L1 p \* hcells L2 (length L1 + p)%nat).
 
+Lemma hcells_concat_eq' : forall p L1 L2,
+  hcells (L1++L2) p = (hcells L1 p \* hcells L2 (length L1 + p)%nat).
+Proof.
+  intros p L1. gen p. induction L1; intros.
+  - rewrite app_nil_l. rewrite length_nil. simpl. xsimpl.
+  - rewrite length_cons. rewrite app_cons_l. simpl. rewrite IHL1.
+    replace (length L1 + (p + 1))%nat with (S (length L1 + p)) by math.
+    xsimpl.
+Qed.
+
 (** This "splitting lemma for arrays" is useful for carrying out local
     reasoning on arrays. For example, in the recursive quicksort algorithm,
     the specification requires a description of the segment to be sorted;
@@ -825,8 +835,12 @@ Lemma triple_mfree_list : forall L p,
   triple (mfree_list p)
     (MList L p)
     (fun _ => \[]).
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros L. induction_wf IH: list_sub L. intros p.
+  xwp. xapp. xchange MList_if. xif; intros C; case_if.
+  - xpull. intros x q L1 ->. xapp. xapp. xapp. xsimpl.
+  - xpull. intros. subst. xval. xsimpl.
+Qed.
 (** [] *)
 
 End ListDealloc.
