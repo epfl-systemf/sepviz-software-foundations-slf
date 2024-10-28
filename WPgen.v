@@ -1208,8 +1208,11 @@ Lemma mkstruct_idempotent : forall F,
   mkstruct (mkstruct F) = mkstruct F.
 Proof using.
   intros. apply fun_ext_1. intros Q. applys himpl_antisym.
-  (* FILL IN HERE *) Admitted.
-
+  - unfold mkstruct. xpull. intros Q1 H1 Q2 H2 M1 M2. xsimpl.
+    intros v. specialize (M1 v). specialize (M2 v). simpl in M1, M2.
+    xchange M1. xchange M2.
+  - unfold mkstruct. xpull. intros Q1 H1 M1.
+    Admitted.
 (** [] *)
 
 (* ----------------------------------------------------------------- *)
@@ -1389,8 +1392,34 @@ Lemma triple_succ_using_incr_with_xlemmas : forall (n:int),
   triple (trm_app succ_using_incr n)
     \[]
     (fun v => \[v = n+1]).
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros.
+  applys xwp_lemma. { reflexivity. }
+  simpl.
+  applys xstruct_lemma.
+  applys xlet_lemma.
+  applys xstruct_lemma.
+  applys xapp_lemma. { apply triple_ref. } { xsimpl. }
+  xpull. intros ? p ->.
+  applys xstruct_lemma.
+  applys xseq_lemma.
+  applys xstruct_lemma.
+  applys xapp_lemma. { apply triple_incr. } { xsimpl. }
+  xpull.
+  applys xstruct_lemma.
+  applys xlet_lemma.
+  applys xstruct_lemma.
+  applys xapp_lemma. { apply triple_get. } { xsimpl. }
+  xpull. intros ? ->.
+  applys xstruct_lemma.
+  applys xseq_lemma.
+  applys xstruct_lemma.
+  applys xapp_lemma. { applys triple_free. } { xsimpl. }
+  xpull.
+  applys xstruct_lemma.
+  applys xval_lemma.
+  xsimpl. reflexivity.
+Qed.
 (** [] *)
 
 End ProofsWithXlemmas.
