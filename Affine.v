@@ -341,8 +341,11 @@ Notation "\GC" := (hgc) : hgc_scope.
 Lemma hgc_intro : forall h,
   heap_affine h ->
   \GC h.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  intros. unfold hgc.
+  exists (=h). rewrite hstar_hpure_l. split; auto.
+  unfold haffine. intros ? ->. assumption.
+Qed.
 (** [] *)
 
 (** The elimination lemma asserts the reciprocal. *)
@@ -354,8 +357,11 @@ Proof using. (* FILL IN HERE *) Admitted.
 Lemma hgc_inv : forall h,
   \GC h ->
   heap_affine h.
-Proof using. (* FILL IN HERE *) Admitted.
-
+Proof using.
+  unfold hgc. intros h M. destruct M as (H & M).
+  rewrite hstar_hpure_l in M. destruct M as (M1 & M2).
+  unfold haffine in M1. apply M1. exact M2.
+Qed.
 (** [] *)
 
 (** Together, the introduction and the elimination rule justify the fact that
