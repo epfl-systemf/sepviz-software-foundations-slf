@@ -78,8 +78,45 @@ Fixpoint MList (L:list val) (p:loc) : hprop :=
   | x::L' => \exists q, (p ~~~> `{ head := x; tail := q}) \* (MList L' q)
   end.
 
-Notation "p '~>' 'MList' L" := (MList L p) (in custom sepviz_heap at level 33).
-Notation "p '~>' 'Record' kvs" := (hrecord kvs p) (in custom sepviz_heap at level 33).
+(* ================================================================= *)
+(** SepViz Notations  *)
+
+Notation "p '~>' 'SingleCell' x" :=
+  (hsingle x p)
+  (in custom sepviz_heap at level 50, x constr at level 0).
+Notation "p '~>' 'MList' L" :=
+  (MList L p)
+  (in custom sepviz_heap at level 50, L constr at level 0).
+Notation "p '~>' 'Record2' f1 x1 f2 x2" :=
+  (hrecord ((f1, (x1:val))::(f2, (x2:val))::nil) p)
+  (in custom sepviz_heap at level 50).
+Notation "p '~>' 'Record3' f1 x1 f2 x2 f3 x3" :=
+  (hrecord ((f1, (x1:val))::(f2, (x2:val))::(f3, (x3:val))::nil) p)
+  (in custom sepviz_heap at level 50).
+Notation "p '~>' 'Record2'' f1 x1 f2 x2" :=
+  (hrecord ((f1, x1)::(f2, x2)::nil) p)
+  (in custom sepviz_heap at level 51,
+      f1 constr at level 0,
+      x1 constr at level 0,
+      f2 constr at level 0,
+      x2 constr at level 0,
+      only printing).
+Notation "p '~>' 'Record3'' f1 x1 f2 x2 f3 x3" :=
+  (hrecord ((f1, x1)::(f2, x2)::(f3, x3)::nil) p)
+  (in custom sepviz_heap at level 51,
+      f1 constr at level 0,
+      x1 constr at level 0,
+      f2 constr at level 0,
+      x2 constr at level 0,
+      f3 constr at level 0,
+      x3 constr at level 0,
+      only printing).
+
+(* Parameter (p: loc) (x: val) (L: list val). *)
+(* Check (MList (rev L) p). *)
+(* Check (MList (x::L) p). *)
+(* Check (MList L p). *)
+
 (* ================================================================= *)
 (** ** Alternative Characterizations of [MList] *)
 
@@ -551,6 +588,14 @@ Definition Stack (L:list val) (s:loc) : hprop :=
     value can be deduced by computing [length L]. Let's start with the
     specification and verification of [create] and [sizeof]. *)
 
+(* ================================================================= *)
+(** SepViz Notations  *)
+
+Notation "p '~>' 'Stack' L" :=
+  (Stack L p)
+  (in custom sepviz_heap at level 50, L constr at level 0).
+(* ================================================================= *)
+
 Definition create : val :=
   <{ fun 'u =>
       `{ data := null; size := 0 } }>.
@@ -703,6 +748,12 @@ Fixpoint MTree (T:tree) (p:loc) : hprop :=
       \* (MTree T2 p2)
   end.
 
+(* ================================================================= *)
+(** SepViz Notations  *)
+
+Notation "p '~>' 'MTree' T" :=
+  (MTree T p)
+  (in custom sepviz_heap at level 50, T constr at level 0).
 (* ================================================================= *)
 (** ** Alternative Characterization of [MTree] *)
 
