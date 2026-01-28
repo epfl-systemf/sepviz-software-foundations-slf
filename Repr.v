@@ -86,7 +86,9 @@ Notation "p '~>' 'SingleCell' x" :=
   (in custom sepviz_heap at level 50, x constr at level 0).
 Notation "p '~>' 'MList' L" :=
   (MList L p)
-  (in custom sepviz_heap at level 50, L constr at level 0).
+  (in custom sepviz_heap at level 50,
+      p constr at level 0,
+      L constr at level 0).
 Notation "p '~>' 'Record2' f1 x1 f2 x2" :=
   (hrecord ((f1, (x1:val))::(f2, (x2:val))::nil) p)
   (in custom sepviz_heap at level 50).
@@ -96,6 +98,7 @@ Notation "p '~>' 'Record3' f1 x1 f2 x2 f3 x3" :=
 Notation "p '~>' 'Record2'' f1 x1 f2 x2" :=
   (hrecord ((f1, x1)::(f2, x2)::nil) p)
   (in custom sepviz_heap at level 51,
+      p constr at level 0,
       f1 constr at level 0,
       x1 constr at level 0,
       f2 constr at level 0,
@@ -104,6 +107,7 @@ Notation "p '~>' 'Record2'' f1 x1 f2 x2" :=
 Notation "p '~>' 'Record3'' f1 x1 f2 x2 f3 x3" :=
   (hrecord ((f1, x1)::(f2, x2)::(f3, x3)::nil) p)
   (in custom sepviz_heap at level 51,
+      p constr at level 0,
       f1 constr at level 0,
       x1 constr at level 0,
       f2 constr at level 0,
