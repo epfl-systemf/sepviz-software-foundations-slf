@@ -1,7 +1,7 @@
 (** * Repr: Representation Predicates *)
 
 Set Implicit Arguments.
-From SLF Require Import LibSepReference.
+From SLF Require Import LibSepReference SepViz_Notations.
 Import ProgramSyntax DemoPrograms.
 From SLF Require Import Basic.
 Open Scope liblist_scope.
@@ -78,6 +78,8 @@ Fixpoint MList (L:list val) (p:loc) : hprop :=
   | x::L' => \exists q, (p ~~~> `{ head := x; tail := q}) \* (MList L' q)
   end.
 
+Notation "p '~>' 'MList' L" := (MList L p) (in custom sepviz_heap at level 33).
+Notation "p '~>' 'Record' kvs" := (hrecord kvs p) (in custom sepviz_heap at level 33).
 (* ================================================================= *)
 (** ** Alternative Characterizations of [MList] *)
 
