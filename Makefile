@@ -22,10 +22,14 @@ SEPVIZ_OUT_DIR = _sepviz_build
 $(SEPVIZ_OUT_DIR):
 	mkdir -p $@
 
-$(SEPVIZ_OUT_DIR)/%.html: %.v
+$(SEPVIZ_OUT_DIR)/SoftwareFoundations-SLF-Repr.html: Repr.v
 	alectryon $(COQ_ALECTRYON_FLAGS) --output $@ $<
 
+# $(SEPVIZ_OUT_DIR)/%.html: %.v
+# 	alectryon $(COQ_ALECTRYON_FLAGS) --output $@ $<
+
 SEPVIZ_MODULES := Repr
-SEPVIZ_HTMLS   := $(addprefix $(SEPVIZ_OUT_DIR)/,$(addsuffix .html,$(SEPVIZ_MODULES)))
+# SEPVIZ_HTMLS   := $(addprefix $(SEPVIZ_OUT_DIR)/,$(addsuffix .html,$(SEPVIZ_MODULES)))
+SEPVIZ_HTMLS   := $(SEPVIZ_OUT_DIR)/SoftwareFoundations-SLF-Repr.html
 
 sepviz: $(SEPVIZ_HTMLS)
