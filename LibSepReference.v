@@ -2625,9 +2625,9 @@ Notation "` F" :=
 
 Declare Custom Entry wp.
 
-Notation "<[ e ]>" :=
-  e
-  (at level 0, e custom wp at level 99) : wp_scope.
+(* Notation "<[ e ]>" := *)
+(*   e *)
+(*   (at level 0, e custom wp at level 99) : wp_scope. *)
 
 Notation "` F" :=
   (mkstruct F)
