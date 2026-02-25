@@ -1,5 +1,9 @@
 (** * Repr: Representation Predicates *)
 
+(*|
+.. coq:: none
+|*)
+
 Set Implicit Arguments.
 From SLF Require Import LibSepReference SepViz_Notations.
 Import ProgramSyntax DemoPrograms.
@@ -77,6 +81,7 @@ Fixpoint MList (L:list val) (p:loc) : hprop :=
   | nil => \[p = null]
   | x::L' => \exists q, (p ~~~> `{ head := x; tail := q}) \* (MList L' q)
   end.
+
 
 (* ================================================================= *)
 (** SepViz Notations  *)
@@ -201,6 +206,8 @@ Qed.
     opaque, thereby avoiding undesired simplifications. *)
 
 Global Opaque MList.
+
+(*||*)
 
 (* ================================================================= *)
 (** ** In-place Concatenation of Two Mutable Lists *)
@@ -592,6 +599,11 @@ Definition Stack (L:list val) (s:loc) : hprop :=
     value can be deduced by computing [length L]. Let's start with the
     specification and verification of [create] and [sizeof]. *)
 
+
+(*|
+.. coq:: none
+|*)
+
 (* ================================================================= *)
 (** SepViz Notations  *)
 
@@ -599,6 +611,8 @@ Notation "p '~>' 'Stack' L" :=
   (Stack L p)
   (in custom sepviz_heap at level 50, L constr at level 0).
 (* ================================================================= *)
+
+(*||*)
 
 Definition create : val :=
   <{ fun 'u =>
@@ -752,12 +766,20 @@ Fixpoint MTree (T:tree) (p:loc) : hprop :=
       \* (MTree T2 p2)
   end.
 
+
+(*|
+.. coq:: none
+|*)
+
 (* ================================================================= *)
 (** SepViz Notations  *)
 
 Notation "p '~>' 'MTree' T" :=
   (MTree T p)
   (in custom sepviz_heap at level 50, T constr at level 0).
+
+(*||*)
+
 (* ================================================================= *)
 (** ** Alternative Characterization of [MTree] *)
 
