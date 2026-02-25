@@ -22,6 +22,12 @@ Notation "∃  x ,  P" :=
   (hexists (fun x => P))
     (in custom sepviz_heap at level 200,
       P custom sepviz_heap at level 200).
+Notation "'If' '(' P ')' 'then' H1 'else' H2" :=
+  (If P then H1 else H2)
+    (in custom sepviz_heap at level 200,
+     H1 custom sepviz_heap at level 200,
+        H2 custom sepviz_heap at level 200,
+    format "If  ( P )  then  H1  else  H2").
 Notation "( x )" :=
   (x)
   (in custom sepviz_heap at level 0,
