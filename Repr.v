@@ -136,6 +136,11 @@ Notation "p '~>' 'Record3'' f1 x1 f2 x2 f3 x3" :=
     [MList]. There is one equality for the [nil] case, and one for the [cons]
     case. *)
 
+
+(*|
+.. coq:: none
+|*)
+
 Lemma MList_nil : forall p,
   (MList nil p) = \[p = null].
 Proof using. auto. Qed.
@@ -144,6 +149,8 @@ Lemma MList_cons : forall p x L',
   MList (x::L') p =
   \exists q, (p ~~~> `{ head := x; tail := q}) \* (MList L' q).
 Proof using. auto. Qed.
+
+(*||*)
 
 (** In addition, it is also very useful in proofs to reformulate the definition
     of [MList L p] in the form of a case analysis on whether the pointer [p] is
