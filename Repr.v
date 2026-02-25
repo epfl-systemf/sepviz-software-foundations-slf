@@ -1,9 +1,5 @@
 (** * Repr: Representation Predicates *)
 
-(*|
-.. coq:: none
-|*)
-
 Set Implicit Arguments.
 From SLF Require Import LibSepReference SepViz_Notations.
 Import ProgramSyntax DemoPrograms.
@@ -82,6 +78,9 @@ Fixpoint MList (L:list val) (p:loc) : hprop :=
   | x::L' => \exists q, (p ~~~> `{ head := x; tail := q}) \* (MList L' q)
   end.
 
+(*|
+.. coq:: none
+|*)
 
 (* ================================================================= *)
 (** SepViz Notations  *)
@@ -125,6 +124,8 @@ Notation "p '~>' 'Record3'' f1 x1 f2 x2 f3 x3" :=
 (* Check (MList (rev L) p). *)
 (* Check (MList (x::L) p). *)
 (* Check (MList L p). *)
+
+(*||*)
 
 (* ================================================================= *)
 (** ** Alternative Characterizations of [MList] *)
@@ -206,8 +207,6 @@ Qed.
     opaque, thereby avoiding undesired simplifications. *)
 
 Global Opaque MList.
-
-(*||*)
 
 (* ================================================================= *)
 (** ** In-place Concatenation of Two Mutable Lists *)
