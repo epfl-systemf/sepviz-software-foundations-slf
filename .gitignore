@@ -50,3 +50,6 @@ Makefile.coq.conf
 
 # direnv
 .direnv
+
+# sepviz
+_sepviz_build
