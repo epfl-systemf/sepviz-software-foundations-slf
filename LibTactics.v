@@ -3,18 +3,18 @@
    DO NOT EDIT. *)
 
 (**************************************************************************
-* Useful General-Purpose Tactics for Coq                                  *
+* Useful General-Purpose Tactics for Rocq                                  *
 * Arthur Chargueraud                                                      *
 * Distributed under the terms of the LGPL-v3 license                      *
 ***************************************************************************)
 
 (** This file contains a set of tactics that extends the set of builtin
-    tactics provided with the standard distribution of Coq. It intends
+    tactics provided with the standard distribution of Rocq. It intends
     to overcome a number of limitations of the standard set of tactics,
     and thereby to help user to write shorter and more robust scripts.
 
-    Hopefully, Coq tactics will be improved as time goes by, and this
-    file should ultimately be useless. In the meanwhile, serious Coq
+    Hopefully, Rocq tactics will be improved as time goes by, and this
+    file should ultimately be useless. In the meanwhile, serious Rocq
     users will probably find it very useful.
 *)
 
@@ -79,8 +79,8 @@ Ltac idcont tt :=
 (* ================================================================= *)
 (** ** Untyped Arguments for Tactics *)
 
-(** Any Coq value can be boxed into the type [Boxer]. This is
-    useful to use Coq computations for implementing tactics. *)
+(** Any Rocq value can be boxed into the type [Boxer]. This is
+    useful to use Rocq computations for implementing tactics. *)
 
 Inductive Boxer : Type :=
   | boxer : forall (A:Type), A -> Boxer.
@@ -172,7 +172,7 @@ Ltac intro_until_mark :=
 (** ** List of Arguments for Tactics  *)
 
 (** A datatype of type [list Boxer] is used to manipulate list of
-    Coq values in ltac. Notation is [>> v1 v2 ... vN] for building
+    Rocq values in ltac. Notation is [>> v1 v2 ... vN] for building
     a list containing the values [v1] through [vN]. *)
 (* Note: could attempt the use of a recursive notation *)
 
@@ -395,7 +395,7 @@ Ltac number_to_nat N :=
   end.
 
 (** [ltac_pattern E at K] is the same as [pattern E at K] except that
-    [K] is a Coq number (nat or Z) rather than a Ltac integer. Syntax
+    [K] is a Rocq number (nat or Z) rather than a Ltac integer. Syntax
     [ltac_pattern E as K in H] is also available. *)
 
 Tactic Notation "ltac_pattern" constr(E) "at" constr(K) :=
@@ -425,7 +425,7 @@ Tactic Notation "ltac_pattern" constr(E) "at" constr(K) "in" hyp(H) :=
   end.
 
 (** [ltac_set (x := E) at K] is the same as [set (x := E) at K] except
-    that [K] is a Coq number (nat or Z) rather than a Ltac integer. *)
+    that [K] is a Rocq number (nat or Z) rather than a Ltac integer. *)
 
 Tactic Notation "ltac_set" "(" ident(X) ":=" constr(E) ")" "at" constr(K) :=
   match number_to_nat K with
@@ -691,9 +691,6 @@ Ltac jauto_set :=
 (* ================================================================= *)
 (** ** Application *)
 
-Ltac old_refine f :=
-  refine f. (* ; shelve_unifiable. *)
-
 (** [rapply] is a tactic similar to [eapply] except that it is
     based on the [refine] tactics, and thus is strictly more
     powerful (at least in theory :). In short, it is able to perform
@@ -703,22 +700,22 @@ Ltac old_refine f :=
 Tactic Notation "rapply" constr(t) :=
   first  (* --Note: the @ are not useful *)
   [ eexact (@t)
-  | old_refine (@t)
-  | old_refine (@t _)
-  | old_refine (@t _ _)
-  | old_refine (@t _ _ _)
-  | old_refine (@t _ _ _ _)
-  | old_refine (@t _ _ _ _ _)
-  | old_refine (@t _ _ _ _ _ _)
-  | old_refine (@t _ _ _ _ _ _ _)
-  | old_refine (@t _ _ _ _ _ _ _ _)
-  | old_refine (@t _ _ _ _ _ _ _ _ _)
-  | old_refine (@t _ _ _ _ _ _ _ _ _ _)
-  | old_refine (@t _ _ _ _ _ _ _ _ _ _ _)
-  | old_refine (@t _ _ _ _ _ _ _ _ _ _ _ _)
-  | old_refine (@t _ _ _ _ _ _ _ _ _ _ _ _ _)
-  | old_refine (@t _ _ _ _ _ _ _ _ _ _ _ _ _ _)
-  | old_refine (@t _ _ _ _ _ _ _ _ _ _ _ _ _ _ _)
+  | refine (@t)
+  | refine (@t _)
+  | refine (@t _ _)
+  | refine (@t _ _ _)
+  | refine (@t _ _ _ _)
+  | refine (@t _ _ _ _ _)
+  | refine (@t _ _ _ _ _ _)
+  | refine (@t _ _ _ _ _ _ _)
+  | refine (@t _ _ _ _ _ _ _ _)
+  | refine (@t _ _ _ _ _ _ _ _ _)
+  | refine (@t _ _ _ _ _ _ _ _ _ _)
+  | refine (@t _ _ _ _ _ _ _ _ _ _ _)
+  | refine (@t _ _ _ _ _ _ _ _ _ _ _ _)
+  | refine (@t _ _ _ _ _ _ _ _ _ _ _ _ _)
+  | refine (@t _ _ _ _ _ _ _ _ _ _ _ _ _ _)
+  | refine (@t _ _ _ _ _ _ _ _ _ _ _ _ _ _ _)
   ].
 
 (** No-typeclass refine apply, TEMPORARY for Coq < 8.11. *)
@@ -747,27 +744,27 @@ Ltac nrapply H :=
     the arity of function [T]. *)
 
 Tactic Notation "rapply_0" constr(t) :=
-  old_refine (@t).
+  refine (@t).
 Tactic Notation "rapply_1" constr(t) :=
-  old_refine (@t _).
+  refine (@t _).
 Tactic Notation "rapply_2" constr(t) :=
-  old_refine (@t _ _).
+  refine (@t _ _).
 Tactic Notation "rapply_3" constr(t) :=
-  old_refine (@t _ _ _).
+  refine (@t _ _ _).
 Tactic Notation "rapply_4" constr(t) :=
-  old_refine (@t _ _ _ _).
+  refine (@t _ _ _ _).
 Tactic Notation "rapply_5" constr(t) :=
-  old_refine (@t _ _ _ _ _).
+  refine (@t _ _ _ _ _).
 Tactic Notation "rapply_6" constr(t) :=
-  old_refine (@t _ _ _ _ _ _).
+  refine (@t _ _ _ _ _ _).
 Tactic Notation "rapply_7" constr(t) :=
-  old_refine (@t _ _ _ _ _ _ _).
+  refine (@t _ _ _ _ _ _ _).
 Tactic Notation "rapply_8" constr(t) :=
-  old_refine (@t _ _ _ _ _ _ _ _).
+  refine (@t _ _ _ _ _ _ _ _).
 Tactic Notation "rapply_9" constr(t) :=
-  old_refine (@t _ _ _ _ _ _ _ _ _).
+  refine (@t _ _ _ _ _ _ _ _ _).
 Tactic Notation "rapply_10" constr(t) :=
-  old_refine (@t _ _ _ _ _ _ _ _ _ _).
+  refine (@t _ _ _ _ _ _ _ _ _ _).
 
 (** [lets_base H E] adds an hypothesis [H : T] to the context, where [T] is
     the type of term [E]. If [H] is an introduction pattern, it will
@@ -812,9 +809,7 @@ Tactic Notation "constructors" :=
 (** ** Assertions *)
 
 (** [asserts H: T] is another syntax for [assert (H : T)], which
-    also works with introduction patterns. For instance, one can write:
-    [asserts \[x P\] (exists n, n = 3)], or
-    [asserts \[H|H\] (n = 0 \/ n = 1). *)
+    also works with introduction patterns. *)
 
 Tactic Notation "asserts" simple_intropattern(I) ":" constr(T) :=
   let H := fresh "TEMP" in assert (H : T);
@@ -1303,11 +1298,12 @@ Ltac applys_build Ei :=
   let args := args_unfold_head_if_not_product_but_params args in
   build_app args ltac:(fun R =>
    first [ apply R | eapply R | rapply R ]).
+   (* TODO: is apply needed? *)
 
 Ltac applys_base E :=
   match type of E with
   | list Boxer => applys_build E
-  | _ => first [ rapply E | applys_build E ]
+  | _ => first [ eapply E | rapply E | applys_build E ]
   end; fast_rm_inside E.
 
 Tactic Notation "applys" constr(E) :=
@@ -1460,7 +1456,7 @@ Tactic Notation "puts" ":" constr(E) :=
 (** ** Application of Tautologies *)
 
 (** [logic E], where [E] is a fact, is equivalent to
-    [assert H:E; [tauto | eapply H; clear H]. It is useful for instance
+    [assert H:E; [tauto | eapply H; clear H]]. It is useful for instance
     to prove a conjunction [A /\ B] by showing first [A] and then [A -> B],
     through the command [logic (foral A B, A -> (A -> B) -> A /\ B)] *)
 
@@ -1698,9 +1694,8 @@ Tactic Notation "false_invert" constr(H) :=
 
 Ltac false_invert_iter :=
   match goal with H:_ |- _ =>
-    solve [ inversion H; false
-          | clear H; false_invert_iter
-          | fail 2 ] end.
+    first [ solve [ inversion H; false ]
+          | clear H; false_invert_iter ] end.
 
 Tactic Notation "false_invert" :=
   intros; solve [ false_invert_iter | false ].
@@ -2484,7 +2479,7 @@ Tactic Notation "unsimpl" constr(E) "in" "*" :=
 Tactic Notation "unsimpls" constr(E) :=
   unsimpl E in *.
 
-(** [nosimpl t] protects the Coq term[t] against some forms of
+(** [nosimpl t] protects the Rocq term[t] against some forms of
     simplification. See Gonthier's work for details on this trick. *)
 
 Notation "'nosimpl' t" := (match tt with tt => t end)
@@ -2606,7 +2601,7 @@ Tactic Notation "pi_rewrite" constr(E) "in" hyp(H) :=
 (* ================================================================= *)
 (** ** Proving Equalities *)
 
-(** The tactic [fequal] enhances Coq's tactic [f_equal], which does not
+(** The tactic [fequal] enhances Rocq's tactic [f_equal], which does not
     simplify equalities between tuples, nor between dependent pairs of
     the form [exist _ _] or [existT _ _]. For support of dependent pairs,
     the file [LibEqual] must be imported.
@@ -2615,7 +2610,7 @@ Tactic Notation "pi_rewrite" constr(E) "in" hyp(H) :=
     See also the the variant [fequals], which discharges more subgoals. *)
 
 (** Note: only [args_eq_2] is actually useful for the implementation of
-    [fequal], if we rely on Coq's [f_equal] tactic for other arities.
+    [fequal], if we rely on Rocq's [f_equal] tactic for other arities.
     We provide these lemmas to show the pattern of lemmas to exploit
     for implementing [fequal] independently of [f_equal]. *)
 
@@ -2684,7 +2679,7 @@ Ltac fequal_base :=
             | apply args_eq_5
             | apply args_eq_6
             | apply args_eq_7
-            | f_equal (* fallback to Coq [f_equal] *) ]
+            | f_equal (* fallback to Rocq [f_equal] *) ]
   end.
 
 Tactic Notation "fequal" :=
@@ -2921,6 +2916,51 @@ Tactic Notation "lets_inverts" constr(E) "as" simple_intropattern(I1)
  simple_intropattern(I2) simple_intropattern(I3) simple_intropattern(I4) :=
   lets_inverts_base E ltac:(fun H => inverts H as I1 I2 I3 I4).
 
+(* ---------------------------------------------------------------------- *)
+(* ================================================================= *)
+(** ** Inversion with Pattern Matching on Head of Hypothesis *)
+
+(** [invert_post] is invoked after [false_inverts] and [invert_if_head].
+    --LATER: could be also called after [invert]. *)
+
+Ltac invert_post tt :=
+  try discriminate.
+
+(** [inverts_post] is invoked after [false_inverts] and [inverts_if_head].
+    --LATER: could be also called after [inverts]. *)
+
+Ltac inverts_post tt :=
+  try discriminate.
+
+(** [false_inverts] is like [false_invert] but with substitutions. *)
+
+Ltac false_inverts_iter :=
+  match goal with H:_ |- _ =>
+    first [ solve [ inversion H; try subst; false; inverts_post tt ] (* could be inverts *)
+          | clear H; false_inverts_iter ] end.
+
+Tactic Notation "false_inverts" :=
+  intros; solve [ false_inverts_iter | false ].
+
+(** [invert_if_head E] calls [invert] on an assumption whose head symbol is [E].
+    It then calls [invert_post tt] to attempt discarding absurd goals *)
+
+Ltac invert_if_head E :=
+  match goal with H: ?T |- _ =>
+    match get_head T with E =>
+      invert H; invert_post tt
+    end
+  end.
+
+(** [inverts_if_head E] calls [inverts] an assumption whose head symbol is [E].
+    It then calls [inverts_post tt] to attempt discarding absurd goals *)
+
+Ltac inverts_if_head E :=
+  match goal with H: ?T |- _ =>
+    match get_head T with E =>
+      inverts H; inverts_post tt
+    end
+  end.
 
 (* ---------------------------------------------------------------------- *)
 (* ================================================================= *)
@@ -3272,6 +3312,7 @@ Tactic Notation "induction_wf" ident(IH) ":" constr(E) ident(X) :=
     judgment that includes a counter for the maximal height
     (see LibTacticsDemos for an example) *)
 
+
 Require Import Coq.Arith.Compare_dec.
 Require Import Coq.micromega.Lia.
 
@@ -3594,7 +3635,7 @@ Tactic Notation "exists" constr(T1) constr(T2) constr(T3) constr(T4)
  constr(T5) constr(T6) :=
   exists T1; exists T2; exists T3; exists T4; exists T5; exists T6.
 
-(** For compatibility with Coq syntax, [exists T1, .., TN] is also provided. *)
+(** For compatibility with Rocq syntax, [exists T1, .., TN] is also provided. *)
 
 Tactic Notation "exists" constr(T1) "," constr(T2) :=
   exists T1 T2.
@@ -4277,7 +4318,7 @@ Tactic Notation "exists" "~" constr(T1) "," constr(T2) "," constr(T3) ","
     same as for light automation.
 
     Exception: use [subs*] instead of [subst*] if you
-    import the library [Coq.Classes.Equivalence]. *)
+    import the library [Equivalence] from [Stdlib]. *)
 
 Tactic Notation "equates" "*" constr(E) :=
    equates E; auto_star.
@@ -5206,7 +5247,7 @@ Tactic Notation "let_name_all" "as" ident(x) :=
 
     The real implementation is careful to not generalized [ltac_Mark],
     even though it is of type [Prop].
-    TODO: investigate whether it would be sufficient to put [ltac_Mark]
+    --TODO: investigate whether it would be sufficient to put [ltac_Mark]
     in [Type] to obtain the desired behavior. *)
 
 Ltac generalize_all_prop :=
@@ -5230,4 +5271,4 @@ Ltac autorewrite_in_star_patch cont :=
 
 (* End of experimental features *)
 
-(* 2023-08-23 12:57 *)
+(* 2026-01-07 13:36 *)

@@ -53,7 +53,7 @@ Proof using. intros. apply (Inhab_of_val 0). Qed.
 (** ** Definition *)
 
 (** The typeclass instance of [le] on [nat] is defined to be the [le]
-    relation on Peano numbers from Coq's standard library. *)
+    relation on Peano numbers from Rocq's standard library. *)
 
 #[global]
 Instance le_nat_inst : Le nat := Build_Le Peano.le.
@@ -282,4 +282,4 @@ Proof using.
   rewrite IHn1. extens. rew_istrue. nat_math.
 Qed.
 
-(* 2023-08-23 12:57 *)
+(* 2026-01-06 11:57 *)

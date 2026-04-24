@@ -3,7 +3,7 @@
    DO NOT EDIT. *)
 
 (**************************************************************************
-* TLC: A library for Coq                                                  *
+* TLC: A library for Rocq                                                  *
 * Integers                                                                *
 **************************************************************************)
 
@@ -23,7 +23,7 @@ From SLF Require Export LibNat.
 (* ================================================================= *)
 (** ** Notation for type and operation *)
 
-(** Define [int] as an alias for [Z], the type of integers from Coq's stdlib. *)
+(** Define [int] as an alias for [Z], the type of integers from Rocq's stdlib. *)
 
 Declare Scope Int_scope.
 Notation "'int'" := Z : Int_scope.
@@ -68,12 +68,12 @@ Coercion nat_to_Z : nat >-> Z.
 (** ** Order relation *)
 
 (** The comparison operators on integers are those from [LibOrder],
-    not the ones from Coq's [ZArith]. *)
+    not the ones from Rocq's [ZArith]. *)
 
 Open Scope Z_scope.
 Open Scope comp_scope.
 
-(** The typeclass [le] on type [int] is bound to [Zle], from Coq's
+(** The typeclass [le] on type [int] is bound to [Zle], from Rocq's
     standard library *)
 
 #[global]
@@ -146,6 +146,12 @@ Ltac int_comp_to_zarith :=
 (* ================================================================= *)
 (** ** Hypothesis selection *)
 
+(** [is_additional_arith_type T] allows for extending the behavior of
+    [is_arith_type]. *)
+
+Ltac is_additional_arith_type T :=
+  constr:(false).
+
 (** [is_arity_type T] returns a boolean indicating whether
     [T] is equal to [nat] or [int] *)
 
@@ -153,7 +159,7 @@ Ltac is_arith_type T :=
   match T with
   | nat => constr:(true)
   | int => constr:(true)
-  | _ => constr:(false)
+  | _ => is_additional_arith_type T
   end.
 
 (** [is_arity E] returns a boolean indicating whether
@@ -577,7 +583,7 @@ Tactic Notation "rew_int" "*" "in" hyp(H) :=
 (* ################################################################# *)
 (** * Conversions of operations from [nat] to [int] and back *)
 
-(** -- LATER: make proofs below no longer depend on Coq's stdlib *)
+(** -- LATER: make proofs below no longer depend on Rocq's stdlib *)
 
 (* ---------------------------------------------------------------------- *)
 (* ================================================================= *)
@@ -919,4 +925,4 @@ Tactic Notation "rew_to_nat_nonneg" :=
 Tactic Notation "rew_to_nat_nonneg" "~" :=
   autorewrite with rew_to_nat_nonneg; try math; autos~.
 
-(* 2023-08-23 12:57 *)
+(* 2026-01-07 13:36 *)

@@ -3,7 +3,7 @@
    DO NOT EDIT. *)
 
 (**************************************************************************
-* TLC: A library for Coq                                                  *
+* TLC: A library for Rocq                                                  *
 * Lists accessed with integers (not nat), using LibContainer typeclasses  *
 **************************************************************************)
 
@@ -956,7 +956,7 @@ Qed.
 Lemma take_pos_last : forall (IA:Inhab A) l i,
   index l (i-1) ->
   take i l = take (i-1) l & l[i-1].
-Proof using. 
+Proof using.
   introv Hi. gen i. induction l; intros; rew_index in Hi; rew_list in Hi.
   { math. }
   { rewrite take_cons_pos; try math.
@@ -1510,4 +1510,4 @@ Qed.
 
 *)
 
-(* 2023-08-23 12:58 *)
+(* 2026-01-07 13:36 *)
