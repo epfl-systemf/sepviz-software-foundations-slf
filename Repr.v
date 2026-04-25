@@ -1,10 +1,13 @@
 (** * Repr: Representation Predicates *)
 
 Set Implicit Arguments.
-From SLF Require Import LibSepReference SepViz_Notations.
+From SLF Require Import LibSepReference.
 Import ProgramSyntax DemoPrograms.
 From SLF Require Import Basic.
 Open Scope liblist_scope.
+
+From SLF Require Import SepvizNotations.
+Open Scope sepviz_scope.
 
 Implicit Types n m : int.
 Implicit Types p q s c : loc.
@@ -96,54 +99,10 @@ Fixpoint MList (L:list val) (p:loc) : hprop :=
   | x::L' => \exists q, (p ~~~> `{ head := x; tail := q}) \* (MList L' q)
   end.
 
-(*|
-.. coq:: none
-|*)
-
-(* ================================================================= *)
-(** SepViz Notations  *)
-
-Notation "p '~>' 'SingleCell' x" :=
-  (hsingle x p)
-  (in custom sepviz_heap at level 50, x constr at level 0).
-Notation "p '~>' 'MList' L" :=
-  (MList L p)
-  (in custom sepviz_heap at level 50,
-      p constr at level 0,
-      L constr at level 0).
-Notation "p '~>' 'Record2' f1 x1 f2 x2" :=
-  (hrecord ((f1, (x1:val))::(f2, (x2:val))::nil) p)
-  (in custom sepviz_heap at level 50).
-Notation "p '~>' 'Record3' f1 x1 f2 x2 f3 x3" :=
-  (hrecord ((f1, (x1:val))::(f2, (x2:val))::(f3, (x3:val))::nil) p)
-  (in custom sepviz_heap at level 50).
-Notation "p '~>' 'Record2'' f1 x1 f2 x2" :=
-  (hrecord ((f1, x1)::(f2, x2)::nil) p)
-  (in custom sepviz_heap at level 51,
-      p constr at level 0,
-      f1 constr at level 0,
-      x1 constr at level 0,
-      f2 constr at level 0,
-      x2 constr at level 0,
-      only printing).
-Notation "p '~>' 'Record3'' f1 x1 f2 x2 f3 x3" :=
-  (hrecord ((f1, x1)::(f2, x2)::(f3, x3)::nil) p)
-  (in custom sepviz_heap at level 51,
-      p constr at level 0,
-      f1 constr at level 0,
-      x1 constr at level 0,
-      f2 constr at level 0,
-      x2 constr at level 0,
-      f3 constr at level 0,
-      x3 constr at level 0,
-      only printing).
-
-(* Parameter (p: loc) (x: val) (L: list val). *)
-(* Check (MList (rev L) p). *)
-(* Check (MList (x::L) p). *)
-(* Check (MList L p). *)
-
-(*||*)
+Notation "'PointsTo' ┆ p ┆ ⟦ '$MList' ┆ x ⟧" :=
+  (MList x p)
+    (in custom sep at level 200,
+     p constr, x constr at level 200): sepviz_scope.
 
 (* ================================================================= *)
 (** ** Alternative Characterizations of [MList] *)
@@ -735,6 +694,11 @@ Definition size : field := 1%nat.
 Definition Stack (L:list val) (s:loc) : hprop :=
   \exists p, s ~~~>`{ data := p; size := length L } \* (MList L p).
 
+Notation "'PointsTo' ┆ p ┆ ⟦ '$Stack' ┆ x ⟧" :=
+  (Stack x p)
+    (in custom sep at level 200,
+     p constr, x constr at level 200): sepviz_scope.
+
 (** Observe that the predicate [Stack] does not expose the location of the
     mutable list; this location is existentially quantified in the definition.
     It also does not expose the size of the stack, as this value can be obtained
@@ -896,19 +860,10 @@ Fixpoint MTree (T:tree) (p:loc) : hprop :=
       \* (MTree T2 p2)
   end.
 
-
-(*|
-.. coq:: none
-|*)
-
-(* ================================================================= *)
-(** SepViz Notations  *)
-
-Notation "p '~>' 'MTree' T" :=
-  (MTree T p)
-  (in custom sepviz_heap at level 50, T constr at level 0).
-
-(*||*)
+Notation "'PointsTo' ┆ p ┆ ⟦ '$MTree' ┆ x ⟧" :=
+  (MTree x p)
+    (in custom sep at level 200,
+     p constr, x constr at level 200): sepviz_scope.
 
 (* ================================================================= *)
 (** ** Alternative Characterization of [MTree] *)
