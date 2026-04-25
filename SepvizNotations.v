@@ -11,7 +11,7 @@ Notation "⟬  e  ⟭" :=
   (e)
     (e custom sep at level 200, at level 0): sepviz_scope.
 
-Notation "'Pure' '┆' P" :=
+Notation "'Pure' ┆ P" :=
   (hpure P)
     (in custom sep at level 200,
      P constr at level 200): sepviz_scope.
@@ -21,29 +21,27 @@ Notation "'PointsTo' ┆ p ┆ ⟦ '$hsingle' ┆ x ⟧" :=
     (in custom sep at level 200,
         p constr, x constr at level 200): sepviz_scope.
 
-Notation "'Star' '┆' H1 '┆' H2" :=
+Notation "'Star' ┆ H1 ┆ H2" :=
   (hstar H1 H2)
     (in custom sep at level 200,
-     H1 constr at level 200,
-     H2 constr at level 200): sepviz_scope.
+     H1 constr, H2 constr at level 200): sepviz_scope.
 
-Notation "'Wand' '┆' H1 '┆' H2" :=
+Notation "'Wand' ┆ H1 ┆ H2" :=
   (hwand H1 H2)
     (in custom sep at level 200,
-     H1 constr at level 200,
-     H2 constr at level 200): sepviz_scope.
+     H1 constr, H2 constr at level 200): sepviz_scope.
 
-Notation "'Exist' '┆' x '┆' P" :=
+Notation "'Exist' ┆ x ┆ P" :=
   (hexists (fun x => P))
     (in custom sep at level 200,
      x name, (* necessary for binder *)
      P constr at level 200): sepviz_scope.
 
-Notation "'Opaque' '┆' 'GC'" :=
+Notation "'Opaque' ┆ 'GC'" :=
   (hgc)
     (in custom sep at level 200): sepviz_scope.
 
-Notation "'Opaque' '┆' 'emp'" :=
+Notation "'Opaque' ┆ 'emp'" :=
   (hempty)
     (in custom sep at level 200): sepviz_scope.
 
@@ -55,20 +53,20 @@ Notation "'IfThenElse' ┆ ⟬ 'Pure' ┆ P ⟭ ┆ v1 ┆ v2" :=
 
 (** ** Separation-logic formulas: props *)
 
-Notation "'SPEC' t '⟬*' 'PRE' '@' H '*⟭' '⟬*' 'POST' '@' Q '*⟭'" :=
+Notation "'SPEC' t ⟬* 'PRE' @ H *⟭ ⟬* 'POST' @ Q *⟭" :=
   (triple t H Q)
     (at level 200,
      t constr, H constr, Q constr at level 200,
      format "'SPEC'  t '//' '⟬*'  'PRE'  '@'  H  '*⟭' '//' '⟬*'  'POST'  '@'  Q  '*⟭'"): sepviz_scope.
 
-Notation "'⟬*' 'PRE' '@' H '*⟭' 'CODE' F '⟬*' 'POST' '@' Q '*⟭'" :=
+Notation "⟬* 'PRE' @ H *⟭ 'CODE' F ⟬* 'POST' @ Q *⟭" :=
   (himpl H (mkstruct F Q))
     (at level 200,
      H constr, F constr, Q constr at level 200,
      format "'⟬*'  'PRE'  '@'  H  '*⟭' '//' 'CODE'  F '//' '⟬*'  'POST'  '@'  Q  '*⟭'"): sepviz_scope.
 
 (* For continuous animation *)
-Notation "'⟬*' 'PRE' '@' H1 '*⟭' '==>' '⟬*' 'POST' '@' H2 '*⟭'" :=
+Notation "⟬* 'PRE' @ H1 '*⟭' ==> ⟬* 'POST' @ H2 *⟭" :=
   (himpl H1 H2)
     (at level 200,
      H1 constr at level 200,
@@ -95,7 +93,7 @@ End septest.
 
 Declare Custom Entry val.
 
-Notation "'⟦' e '⟧'" :=
+Notation "⟦ e ⟧" :=
   (e)
     (e custom val at level 200, at level 0): sepviz_scope.
 
