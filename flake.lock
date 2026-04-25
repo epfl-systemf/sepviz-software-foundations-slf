@@ -1,5 +1,22 @@
 {
   "nodes": {
+    "alectryon-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1775518967,
+        "narHash": "sha256-QXMYYzmPGwNbVESO4tqzZh61c/4dxNSs10B2wVPO2r0=",
+        "owner": "cpitclaudel",
+        "repo": "alectryon",
+        "rev": "86bac4eae28c2d6f27859a4ca8821a374e8b1c4f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cpitclaudel",
+        "ref": "v2.0.0",
+        "repo": "alectryon",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
@@ -20,22 +37,23 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1769318308,
-        "narHash": "sha256-Mjx6p96Pkefks3+aA+72lu1xVehb6mv2yTUUqmSet6Q=",
+        "lastModified": 1776949667,
+        "narHash": "sha256-GMSVw35Q+294GlrTUKlx087E31z7KurReQ1YHSKp5iw=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "1cd347bf3355fce6c64ab37d3967b4a2cb4b878c",
+        "rev": "01fbdeef22b76df85ea168fbfe1bfd9e63681b30",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-25.11",
+        "ref": "nixpkgs-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
     },
     "root": {
       "inputs": {
+        "alectryon-src": "alectryon-src",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs"
       }
