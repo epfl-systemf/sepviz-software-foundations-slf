@@ -74,7 +74,7 @@ Notation "⟬* 'PRE' @ H1 '*⟭' ==> ⟬* 'POST' @ H2 *⟭" :=
      format "'⟬*'  'PRE'  '@'  H1  '*⟭' '==>' '⟬*'  'POST'  '@'  H2  '*⟭'"): sepviz_scope.
 
 
-(** ** disable notations *)
+(** ** Disabled notations *)
 
 Notation "Q \*+ H" := (fun x => hstar (Q x) H) (only parsing): heap_scope.
 
