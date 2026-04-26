@@ -31,7 +31,7 @@ SEPVIZ_HTMLS    := $(patsubst %,$(SEPVIZ_OUTDIR)/SoftwareFoundations-SLF-%.html,
 $(SEPVIZ_OUTDIR):
 	mkdir -p $@
 
-$(SEPVIZ_OUTDIR)/SoftwareFoundations-SLF-%.html: %.v $(ALLVOFILES)
+$(SEPVIZ_OUTDIR)/SoftwareFoundations-SLF-%.html: %.v $(ALLVOFILES) | $(SEPVIZ_OUTDIR)
 	alectryon $(ALECTRYON_FLAGS) --output $@ $<
 
 sepviz: $(SEPVIZ_HTMLS)
