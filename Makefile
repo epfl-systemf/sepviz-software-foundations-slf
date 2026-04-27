@@ -6,6 +6,9 @@ ALLVFILES := LibAxioms.v LibTactics.v LibEqual.v LibLogic.v LibOperation.v LibBo
 ALLVFILES += SepvizNotations.v
 ALLVOFILES := $(patsubst %.v,%.vo,$(ALLVFILES))
 
+all: build
+.PHONY: all
+
 build: Makefile.coq
 	$(MAKE) -f Makefile.coq
 	$(MAKE) sepviz
